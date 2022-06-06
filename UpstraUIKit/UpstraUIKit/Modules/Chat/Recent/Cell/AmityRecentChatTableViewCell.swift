@@ -55,11 +55,11 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
         memberLabel.font = AmityFontSet.caption
         memberLabel.textColor = AmityColorSet.base.blend(.shade1)
         
-        previewMessageLabel.text = "No message yet\nNo message yet"
-        previewMessageLabel.numberOfLines = 2
+        previewMessageLabel.text = "No message yet"
+        previewMessageLabel.numberOfLines = 1
         previewMessageLabel.font = AmityFontSet.body
         previewMessageLabel.textColor = AmityColorSet.base.blend(.shade2)
-        previewMessageLabel.alpha = 0
+        previewMessageLabel.alpha = 1
         
         dateTimeLabel.font = AmityFontSet.caption
         dateTimeLabel.textColor = AmityColorSet.base.blend(.shade2)
@@ -67,6 +67,7 @@ final class AmityRecentChatTableViewCell: UITableViewCell, Nibbable {
     }
     
     func display(with channel: AmityChannelModel) {
+        previewMessageLabel.text = channel.previewMessage
         badgeView.badge = channel.unreadCount
         memberLabel.text = ""
         dateTimeLabel.text = AmityDateFormatter.Chat.getDate(date: channel.lastActivity)

@@ -20,8 +20,9 @@ public struct AmityChannelModel {
     let avatarFileId: String?
     let participation: AmityChannelParticipation
     let metadata: [String:Any]
+    let previewMessage: String?
     
-    init(object: AmityChannel) {
+    init(object: AmityChannel,previewMessage: String? = "555") {
         self.channelId = object.channelId
         self.avatarURL = object.getAvatarInfo()?.fileURL ?? ""
         self.displayName = object.displayName ?? AmityLocalizedStringSet.General.anonymous.localizedString
@@ -32,6 +33,7 @@ public struct AmityChannelModel {
         self.channelType = object.channelType
         self.avatarFileId = object.getAvatarInfo()?.fileURL
         self.metadata = object.metadata ?? [:]
+        self.previewMessage = previewMessage
     }
     
     var isConversationChannel: Bool {
@@ -61,9 +63,13 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     // MARK: - Repository
     private let channelRepository: AmityChannelRepository
     private var roleController: AmityChannelRoleController?
+    // MARK: AU custom - Repository
+    private let messageRepository: AmityMessageRepository
     
     // MARK: - Collection
     private var channelsCollection: AmityCollection<AmityChannel>?
+    // MARK: Au custom - Collection
+    private var messagesCollection: AmityCollection<AmityMessage>?
     
     
     
@@ -72,10 +78,13 @@ final class AmityRecentChatScreenViewModel: AmityRecentChatScreenViewModelType {
     private var existingChannelToken: AmityNotificationToken?
     private var communityToken: AmityNotificationToken?
     private var channelType: AmityChannelType = .conversation
+    // MARK: Au custom - Token
+    private var messagestoken: AmityNotificationToken?
     
     init(channelType: AmityChannelType) {
         self.channelType = channelType
         channelRepository = AmityChannelRepository(client: AmityUIKitManagerInternal.shared.client)
+        messageRepository = AmityMessageRepository(client: AmityUIKitManagerInternal.shared.client)
     }
     
     required init?(coder: NSCoder) {
@@ -236,15 +245,20 @@ private extension AmityRecentChatScreenViewModel {
             query.filter = .userIsMember
             query.includeDeleted = false
             channelsCollection = channelRepository.getChannels(with: query)
+           
+            
         case .conversation:
             let query = AmityChannelQuery()
             query.types = [AmityChannelQueryType.conversation]
             query.includeDeleted = false
             channelsCollection = channelRepository.getChannels(with: query)
+           
         default:
             break
         }
         channelsToken = channelsCollection?.observe { [weak self] (collection, change, error) in
+     
+           
             self?.prepareDataSource()
         }
     }
@@ -256,8 +270,18 @@ private extension AmityRecentChatScreenViewModel {
         }
         var _channels: [AmityChannelModel] = []
         for index in 0..<collection.count() {
+            var prevMessage = "1111";
             guard let channel = collection.object(at: UInt(index)) else { return }
-            let model = AmityChannelModel(object: channel)
+      
+            print("::\(channel.displayName)")
+            self.messagesCollection = self.messageRepository.getMessages(channelId: channel.channelId, includingTags: [], excludingTags: [], filterByParentId: false, parentId: nil, reverse: true);
+            self.messagestoken = self.messagesCollection?.observe({ collectionM, change, error in
+                print(channel.displayName);
+                prevMessage = collectionM.object(at: 0)?.data?["text"] as! String
+                self.messagestoken?.invalidate();
+                                })
+            
+            let model = AmityChannelModel(object: channel,previewMessage: prevMessage)
             _channels.append(model)
         }
         channels = _channels
