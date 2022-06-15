@@ -183,6 +183,8 @@ private extension AmityMessageListViewController {
             navigationHeaderViewController = AmityMessageListHeaderView(viewModel: screenViewModel)
             let item = UIBarButtonItem(customView: navigationHeaderViewController)
             navigationItem.leftBarButtonItem = item
+
+
             let image = AmityIconSet.Chat.iconSetting
             let barButton = UIBarButtonItem(image: image,
                                             style: .plain,
