@@ -20,7 +20,7 @@ public extension AmityMessageListViewController {
         /// Set compose bar style. The default value is `ComposeBarStyle.default`.
         public var composeBarStyle = ComposeBarStyle.default
         public var shouldHideAudioButton: Bool = false
-        public var shouldShowChatSettingBarButton: Bool = false
+        public var shouldShowChatSettingBarButton: Bool = true
         public var enableConnectionBar: Bool = true
         public init() {
             // Intentionally left empty
@@ -183,8 +183,6 @@ private extension AmityMessageListViewController {
             navigationHeaderViewController = AmityMessageListHeaderView(viewModel: screenViewModel)
             let item = UIBarButtonItem(customView: navigationHeaderViewController)
             navigationItem.leftBarButtonItem = item
-
-
             let image = AmityIconSet.Chat.iconSetting
             let barButton = UIBarButtonItem(image: image,
                                             style: .plain,

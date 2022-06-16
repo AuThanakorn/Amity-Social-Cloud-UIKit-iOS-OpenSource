@@ -14,6 +14,7 @@ final class AmityMessageListHeaderView: AmityView {
     // MARK: - Properties
     @IBOutlet private var avatarView: AmityAvatarView!
     @IBOutlet private var displayNameLabel: UILabel!
+    @IBOutlet private var memberCount: UILabel!
     @IBOutlet private var backButton: UIButton!
     
     // MARK: - Collections
@@ -50,6 +51,9 @@ private extension AmityMessageListHeaderView {
         displayNameLabel.textColor = AmityColorSet.base
         displayNameLabel.font = AmityFontSet.title
         
+        memberCount.textColor = AmityColorSet.base
+        memberCount.font = AmityFontSet.title
+        
         avatarView.image = nil
         avatarView.placeholder = AmityIconSet.defaultAvatar
     }
@@ -59,6 +63,7 @@ extension AmityMessageListHeaderView {
     
     func updateViews(channel: AmityChannelModel) {
         displayNameLabel.text = channel.displayName
+        memberCount.text = "(\(channel.memberCount))"
         switch channel.channelType {
         case .standard:
             avatarView.setImage(withImageURL: channel.avatarURL, placeholder: AmityIconSet.defaultGroupChat)

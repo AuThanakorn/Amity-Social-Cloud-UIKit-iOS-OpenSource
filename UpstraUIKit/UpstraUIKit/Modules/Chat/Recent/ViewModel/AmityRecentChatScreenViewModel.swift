@@ -270,18 +270,8 @@ private extension AmityRecentChatScreenViewModel {
         }
         var _channels: [AmityChannelModel] = []
         for index in 0..<collection.count() {
-            var prevMessage = "1111";
             guard let channel = collection.object(at: UInt(index)) else { return }
-      
-            print("::\(channel.displayName)")
-            self.messagesCollection = self.messageRepository.getMessages(channelId: channel.channelId, includingTags: [], excludingTags: [], filterByParentId: false, parentId: nil, reverse: true);
-            self.messagestoken = self.messagesCollection?.observe({ collectionM, change, error in
-                print(channel.displayName);
-                prevMessage = collectionM.object(at: 0)?.data?["text"] as! String
-                self.messagestoken?.invalidate();
-                                })
-            
-            let model = AmityChannelModel(object: channel,previewMessage: prevMessage)
+            let model = AmityChannelModel(object: channel)
             _channels.append(model)
         }
         channels = _channels
